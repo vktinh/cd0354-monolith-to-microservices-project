@@ -1,0 +1,28 @@
+language: node_js
+node_js:
+  - 12
+
+services:
+  - docker
+
+# Scripts to be run such as test
+before_script:
+  - echo "Travis Run Project 3"
+
+script:
+  - docker build -t udagram-frontend ./udagram-frontend
+  - docker tag udagram-frontend vukhiemtinh/udagram-frontend:v1
+  - docker build -t udagram-api-feed ./udagram-api-feed
+  - docker tag udagram-api-feed vukhiemtinh/udagram-api-feed:v1
+  - docker build -t udagram-api-user ./udagram-api-user
+  - docker tag udagram-api-user vukhiemtinh/udagram-api-user:v1
+  - docker build -t reverseproxy ./udagram-reverseproxy
+  - docker tag reverseproxy vukhiemtinh/reverseproxy:v1
+
+after_script:
+  - docker images
+  - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+  - docker push vukhiemtinh/udagram-api-feed:v1
+  - docker push vukhiemtinh/udagram-api-user:v1
+  - docker push vukhiemtinh/udagram-frontend:v1
+  - docker push vukhiemtinh/reverseproxy:v1
